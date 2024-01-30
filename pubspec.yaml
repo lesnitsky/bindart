@@ -1,6 +1,6 @@
 name: bindart
 description: Binary encoding and decoding library for Dart and Flutter.
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/lesnitsky/bindart
 
 environment:
