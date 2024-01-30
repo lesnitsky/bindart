@@ -52,7 +52,13 @@ void main() {
         }
 
         if (c is String) {
-          return BString(c);
+          return switch (c.length) {
+            <= 255 => BString255(c),
+            <= 65535 => BString65535(c),
+            <= 4294967295 => BString4294967295(c),
+            <= kMaxInt => BString(c),
+            _ => throw Exception('Invalid string length: ${c.length}'),
+          };
         }
 
         if (c is bool) {
@@ -142,7 +148,7 @@ void main() {
             decoded.add(chunk.content);
 
           case 12:
-            final chunk = BString.read(byteList.buffer.asByteData(cursor));
+            final chunk = BString255.read(byteList.buffer.asByteData(cursor));
             cursor += chunk.$byteLength;
             decoded.add(chunk.content);
 

@@ -367,16 +367,112 @@ class BBool implements BinaryChunk<bool> {
   }
 }
 
-class BString implements BinaryChunk {
+class BString255 implements BinaryChunk<String> {
   @override
   TIDBox get $tid => tid.from(12);
 
   @override
   final String content;
 
-  static BString read(ByteData data) {
+  static BString255 read(ByteData data) {
+    final length = data.getUint8(0);
+    final encoded = data.buffer.asUint8List(data.offsetInBytes + 1, length);
+    final content = utf8.decode(encoded);
+
+    return BString255(content);
+  }
+
+  late final encoded = utf8.encode(content);
+
+  BString255(this.content) : assert(content.length <= 255);
+
+  @override
+  int get $byteLength => 1 + encoded.length;
+
+  @override
+  void writeTo(ByteData data) {
+    data.setUint8(0, encoded.length);
+
+    for (var i = 0; i < encoded.length; i++) {
+      data.setUint8(1 + i, encoded[i]);
+    }
+  }
+}
+
+class BString65535 implements BinaryChunk<String> {
+  @override
+  TIDBox get $tid => tid.from(13);
+
+  @override
+  final String content;
+
+  static BString65535 read(ByteData data) {
+    final length = data.getUint16(0);
+    final encoded = data.buffer.asUint8List(data.offsetInBytes + 2, length);
+    final content = utf8.decode(encoded);
+
+    return BString65535(content);
+  }
+
+  late final encoded = utf8.encode(content);
+
+  BString65535(this.content) : assert(content.length <= 65535);
+
+  @override
+  int get $byteLength => 2 + encoded.length;
+
+  @override
+  void writeTo(ByteData data) {
+    data.setUint16(0, encoded.length);
+
+    for (var i = 0; i < encoded.length; i++) {
+      data.setUint8(2 + i, encoded[i]);
+    }
+  }
+}
+
+class BString4294967295 implements BinaryChunk<String> {
+  @override
+  TIDBox get $tid => tid.from(14);
+
+  @override
+  final String content;
+
+  static BString4294967295 read(ByteData data) {
     final length = data.getUint32(0);
     final encoded = data.buffer.asUint8List(data.offsetInBytes + 4, length);
+    final content = utf8.decode(encoded);
+
+    return BString4294967295(content);
+  }
+
+  late final encoded = utf8.encode(content);
+
+  BString4294967295(this.content) : assert(content.length <= 4294967295);
+
+  @override
+  int get $byteLength => 4 + encoded.length;
+
+  @override
+  void writeTo(ByteData data) {
+    data.setUint32(0, encoded.length);
+
+    for (var i = 0; i < encoded.length; i++) {
+      data.setUint8(4 + i, encoded[i]);
+    }
+  }
+}
+
+class BString implements BinaryChunk<String> {
+  @override
+  TIDBox get $tid => tid.from(15);
+
+  @override
+  final String content;
+
+  static BString read(ByteData data) {
+    final length = data.getUint64(0);
+    final encoded = data.buffer.asUint8List(data.offsetInBytes + 8, length);
     final content = utf8.decode(encoded);
 
     return BString(content);
@@ -387,13 +483,14 @@ class BString implements BinaryChunk {
   BString(this.content);
 
   @override
-  int get $byteLength => 4 + encoded.length;
+  int get $byteLength => 8 + encoded.length;
 
   @override
   void writeTo(ByteData data) {
-    data.setUint32(0, encoded.length);
+    data.setUint64(0, encoded.length);
+
     for (var i = 0; i < encoded.length; i++) {
-      data.setUint8(0 + 4 + i, encoded[i]);
+      data.setUint8(8 + i, encoded[i]);
     }
   }
 }
