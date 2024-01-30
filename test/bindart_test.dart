@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 void main() {
   group('bindart', () {
     test('works', () {
-      tid = UInt32TID();
+      tid = UInt8TID();
 
       const initial = [
         1,
